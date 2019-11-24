@@ -3,16 +3,14 @@ import 'package:easylist2/products.dart';
 import 'package:flutter/material.dart';
 
 class ProductManager extends StatefulWidget {
-
   final String startingProduct;
-  ProductManager({this.startingProduct = 'Sweets Tester'});
+  ProductManager({this.startingProduct});
 
   @override
   _ProductManagerState createState() => _ProductManagerState();
 }
 
 class _ProductManagerState extends State<ProductManager> {
-  
   List<String> _products = [];
 
   void _addProduct(String product) {
@@ -24,7 +22,9 @@ class _ProductManagerState extends State<ProductManager> {
   @override
   void initState() {
     super.initState();
-    _products.add(widget.startingProduct);
+    if (widget.startingProduct != null) {
+      _products.add(widget.startingProduct);
+    }
   }
 
   @override
@@ -35,7 +35,9 @@ class _ProductManagerState extends State<ProductManager> {
           child: ProductControl(_addProduct),
           margin: EdgeInsets.all(8.0),
         ),
-        Products(_products),
+        Expanded(
+          child: Products(_products),
+        ),
       ],
     );
   }
