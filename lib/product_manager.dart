@@ -1,6 +1,8 @@
 import 'package:easylist2/product_control.dart';
 import 'package:easylist2/products.dart';
+
 import 'package:flutter/material.dart';
+
 
 class ProductManager extends StatefulWidget {
   final Map<String, String> startingProduct;
@@ -16,6 +18,12 @@ class _ProductManagerState extends State<ProductManager> {
   void _addProduct(Map<String, String> product) {
     setState(() {
       _products.add(product);
+    });
+  }
+
+  void _deleteProduct(index) {
+    setState(() {
+      _products.removeAt(index);
     });
   }
 
@@ -36,7 +44,10 @@ class _ProductManagerState extends State<ProductManager> {
           margin: EdgeInsets.all(8.0),
         ),
         Expanded(
-          child: Products(_products),
+          child: Products(
+            _products,
+            deleteProduct: _deleteProduct,
+          ),
         ),
       ],
     );
