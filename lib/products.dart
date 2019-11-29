@@ -56,7 +56,6 @@ class Products extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('[Products Widget] build()');
     return _buildProductList();
   }
 }
