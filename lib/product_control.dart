@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+///
+/// add product button
+///
+
 class ProductControl extends StatelessWidget {
   final Function addProduct;
 

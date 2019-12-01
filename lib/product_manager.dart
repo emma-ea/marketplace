@@ -1,52 +1,33 @@
-import 'package:easylist2/product_control.dart';
-import 'package:easylist2/products.dart';
+import './product_control.dart';
+import './products.dart';
 
 import 'package:flutter/material.dart';
 
+///
+/// mange product list and add product button
+///
 
-class ProductManager extends StatefulWidget {
-  final Map<String, String> startingProduct;
-  ProductManager({this.startingProduct});
 
-  @override
-  _ProductManagerState createState() => _ProductManagerState();
-}
+class ProductManager extends StatelessWidget {
 
-class _ProductManagerState extends State<ProductManager> {
-  List<Map<String, String>> _products = [];
+  final List<Map<String, String>> products;
+  final Function addProduct;
+  final Function deleteProduct;
 
-  void _addProduct(Map<String, String> product) {
-    setState(() {
-      _products.add(product);
-    });
-  }
-
-  void _deleteProduct(index) {
-    setState(() {
-      _products.removeAt(index);
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.startingProduct != null) {
-      _products.add(widget.startingProduct);
-    }
-  }
-
+  ProductManager(this.products, this.addProduct, this.deleteProduct);
+  
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Container(
-          child: ProductControl(_addProduct),
+          child: ProductControl(addProduct),
           margin: EdgeInsets.all(8.0),
         ),
         Expanded(
           child: Products(
-            _products,
-            deleteProduct: _deleteProduct,
+            products,
+            deleteProduct: deleteProduct,
           ),
         ),
       ],

@@ -1,6 +1,10 @@
-import 'package:easylist2/pages/product.dart';
+import './pages/product.dart';
 
 import 'package:flutter/material.dart';
+
+///
+/// hold a list of products.. displayed in products.dart ProductsPage
+///
 
 class Products extends StatelessWidget {
   final List<Map<String, String>> products;
@@ -20,11 +24,9 @@ class Products extends StatelessWidget {
               FlatButton(
                 child: Text('Details'),
                 onPressed: () {
-                  Navigator.push<bool>(
+                  Navigator.pushNamed<bool>(
                     context,
-                    MaterialPageRoute(
-                      builder: (BuildContext context) => ProductPage(products[index]['title'], products[index]['image']),
-                    ),
+                    '/product/' + index.toString()
                   ).then((bool onValue) {
                     if (onValue) {
                       deleteProduct(index);
