@@ -4,8 +4,9 @@ class ProductEditPage extends StatefulWidget {
   final Function addProduct;
   final Function updateProduct;
   final Map<String, dynamic> product;
+  final int productIndex;
 
-  ProductEditPage({this.addProduct, this.updateProduct, this.product});
+  ProductEditPage({this.addProduct, this.updateProduct, this.product, this.productIndex});
 
   @override
   _ProductEditPageState createState() => _ProductEditPageState();
@@ -25,6 +26,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
       decoration: InputDecoration(
         labelText: 'Product Title',
       ),
+      initialValue: widget.product == null ? '' : widget.product['title'],
       validator: (input) =>
           input.isEmpty || input.length < 5 ? 'Title is required' : null,
       onSaved: (input) {
@@ -39,6 +41,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
         labelText: 'Product Description',
       ),
       maxLines: 4,
+      initialValue: widget.product == null ? '' : widget.product['description'],
       validator: (String input) {
         if (input.isEmpty || input.length < 10) {
           return 'Description is required. Length should be 10+';
@@ -57,6 +60,7 @@ class _ProductEditPageState extends State<ProductEditPage> {
         labelText: 'Product Price',
       ),
       keyboardType: TextInputType.number,
+      initialValue: widget.product == null ? '' : widget.product['price'].toString(),
       validator: (input) {
         if (input.isEmpty ||
             !RegExp(r'^(?:[1-9]\d*|0)?(?:\.\d+)?$').hasMatch(input)) {
@@ -70,20 +74,12 @@ class _ProductEditPageState extends State<ProductEditPage> {
     );
   }
 
-  _submitForm() {
-    if (!_formKey.currentState.validate()) {
-      return;
-    }
-    _formKey.currentState.save();
-    widget.addProduct(_formData);
-    Navigator.pushReplacementNamed(context, '/products');
-  }
+  Widget _buildPageContent(BuildContext context) {
 
-  @override
-  Widget build(BuildContext context) {
     final double deviceWidth = MediaQuery.of(context).size.width;
     final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * 0.95;
     final double targetPadding = deviceWidth - targetWidth;
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).requestFocus(FocusNode());
@@ -110,5 +106,33 @@ class _ProductEditPageState extends State<ProductEditPage> {
         ),
       ),
     );
+  }
+
+  _submitForm() {
+    if (!_formKey.currentState.validate()) {
+      return;
+    }
+    _formKey.currentState.save();
+
+    if (widget.product == null) {
+      widget.addProduct(_formData);
+    } else {
+      widget.updateProduct(widget.productIndex, _formData);
+    }
+    Navigator.pushReplacementNamed(context, '/products');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Widget pageContent = _buildPageContent(context);
+
+    return widget.product == null
+        ? pageContent
+        : Scaffold(
+            appBar: AppBar(
+              title: Text('Edit Product'),
+            ),
+            body: pageContent,
+          );
   }
 }
