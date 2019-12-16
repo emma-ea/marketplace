@@ -1,21 +1,17 @@
+import 'package:easylist2/widgets/products/products.dart';
 import 'package:flutter/material.dart';
-
-import '../product_manager.dart';
 
 ///
 /// add new products page
 ///
 
 class ProductsPage extends StatelessWidget {
-
   final List<Map<String, dynamic>> products;
 
   ProductsPage(this.products);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: Drawer(
+  Widget _buildSideDrawer(context) {
+    return Drawer(
         child: Column(
           children: <Widget>[
             AppBar(
@@ -23,6 +19,7 @@ class ProductsPage extends StatelessWidget {
               automaticallyImplyLeading: false,
             ),
             ListTile(
+              leading: Icon(Icons.edit),
               title: Text('Manage Products'),
               onTap: () {
                 Navigator.pushReplacementNamed(context, '/admin');
@@ -30,11 +27,25 @@ class ProductsPage extends StatelessWidget {
             ),
           ],
         ),
-      ),
+      );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      drawer: _buildSideDrawer(context),
       appBar: AppBar(
         title: Text('EasyList'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.favorite),
+            onPressed: () {},
+          )
+        ],
       ),
-      body: ProductManager(products),
+      body: Products(
+            products,
+          ),
     );
   }
 }
