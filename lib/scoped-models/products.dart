@@ -6,7 +6,17 @@ class ProductModel extends Model {
 
   int _selectedProductIndex;
 
+  bool _showFavorites = false;
+
   List<Product> get products {
+    return List.from(_products);
+  }
+
+  List<Product> get displayProducts {
+    if (_showFavorites) {
+      return List.from(
+          _products.where((Product product) => product.isFavorite).toList());
+    }
     return List.from(_products);
   }
 
@@ -14,6 +24,8 @@ class ProductModel extends Model {
 
   Product get selectedProduct =>
       _selectedProductIndex == null ? null : _products[selectedProductIndex];
+
+  bool get displayFavoritesOnly => _showFavorites;
 
   void addProduct(Product product) {
     _products.add(product);
@@ -29,12 +41,11 @@ class ProductModel extends Model {
     final bool isCurrentlyFavorite = selectedProduct.isFavorite;
     final bool newFavoriteStatus = !isCurrentlyFavorite;
     final Product updatedProduct = Product(
-      title: selectedProduct.title,
-      description: selectedProduct.description,
-      price: selectedProduct.price,
-      image: selectedProduct.image,
-      isFavorite: newFavoriteStatus
-    );
+        title: selectedProduct.title,
+        description: selectedProduct.description,
+        price: selectedProduct.price,
+        image: selectedProduct.image,
+        isFavorite: newFavoriteStatus);
     _products[_selectedProductIndex] = updatedProduct;
     _selectedProductIndex = null;
     notifyListeners();
@@ -47,5 +58,10 @@ class ProductModel extends Model {
 
   void selectProduct(int index) {
     _selectedProductIndex = index;
+  }
+
+  void toggleDisplayMode() {
+    _showFavorites = !_showFavorites;
+    notifyListeners();
   }
 }
