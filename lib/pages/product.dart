@@ -1,6 +1,9 @@
+import 'package:easylist2/models/product.dart';
 import 'package:easylist2/widgets/ui_elements/title_default.dart';
 import 'package:flutter/material.dart';
 
+import 'package:scoped_model/scoped_model.dart';
+import 'package:easylist2/scoped-models/products.dart';
 import 'dart:async';
 
 ///
@@ -8,15 +11,11 @@ import 'dart:async';
 ///
 
 class ProductPage extends StatelessWidget {
+  final int productIndex;
 
-  final String title;
-  final String imageUrl;
-  final String description;
-  final double price;
+  ProductPage(this.productIndex);
 
-  ProductPage(this.title, this.imageUrl, this.price, this.description);
-
-  _showWarningDialog(BuildContext context) {
+  /*_showWarningDialog(BuildContext context) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -40,9 +39,9 @@ class ProductPage extends StatelessWidget {
             ],
           );
         });
-  }
+  } */
 
-  Widget _buildAddressPriceRow() {
+  Widget _buildAddressPriceRow(double price) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -72,29 +71,41 @@ class ProductPage extends StatelessWidget {
         Navigator.pop(context, false);
         return Future.value(false);
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(imageUrl),
-            Container(
-              padding: EdgeInsets.all(10.0),
-              child: TitleDefault(
-                title: title,
-              ),
+      child: ScopedModelDescendant<ProductModel>(
+        builder: (BuildContext context, Widget child, ProductModel model) {
+          final Product product = model.products[productIndex];
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(product.title),
             ),
-            _buildAddressPriceRow(),
-            RaisedButton(
-              color: Theme.of(context).accentColor,
-              textColor: Color(0xffffffff),
-              child: Text('DELETE'),
-              onPressed: () => _showWarningDialog(context), // delete does nothing.
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset(product.image),
+                Container(
+                  padding: EdgeInsets.all(10.0),
+                  child: TitleDefault(
+                    title: product.title,
+                  ),
+                ),
+                _buildAddressPriceRow(product.price),
+                // RaisedButton(
+                //   color: Theme.of(context).accentColor,
+                //   textColor: Color(0xffffffff),
+                //   child: Text('DELETE'),
+                //   onPressed: () => _showWarningDialog(context), // delete does nothing.
+                // ),
+                Container(
+                  padding: EdgeInsets.all(10),
+                  child: Text(
+                    product.description,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

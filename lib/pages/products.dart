@@ -1,3 +1,4 @@
+import 'package:easylist2/models/product.dart';
 import 'package:easylist2/widgets/products/products.dart';
 import 'package:flutter/material.dart';
 
@@ -6,10 +7,7 @@ import 'package:flutter/material.dart';
 ///
 
 class ProductsPage extends StatelessWidget {
-  final List<Map<String, dynamic>> products;
-
-  ProductsPage(this.products);
-
+  
   Widget _buildSideDrawer(context) {
     return Drawer(
         child: Column(
@@ -43,9 +41,7 @@ class ProductsPage extends StatelessWidget {
           )
         ],
       ),
-      body: Products(
-            products,
-          ),
+      body: Products(),
     );
   }
 }

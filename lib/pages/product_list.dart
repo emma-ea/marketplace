@@ -1,9 +1,10 @@
+import 'package:easylist2/models/product.dart';
 import 'package:flutter/material.dart';
 
 import 'product_edit.dart';
 
 class ProductListPage extends StatelessWidget {
-  final List<Map<String, dynamic>> products;
+  final List<Product> products;
   final Function updateProduct;
   final Function deleteProduct;
 
@@ -33,7 +34,7 @@ class ProductListPage extends StatelessWidget {
       itemCount: products.length,
       itemBuilder: (BuildContext context, int index) {
         return Dismissible(
-          key: Key(products[index]['title']),
+          key: Key(products[index].title),
           onDismissed: (DismissDirection direction) {
             if (direction == DismissDirection.endToStart) {
               print('end to start. product deleted');
@@ -53,11 +54,11 @@ class ProductListPage extends StatelessWidget {
                   ListTile(
                     leading: CircleAvatar(
                       backgroundImage: AssetImage(
-                        products[index]['image'],
+                        products[index].image,
                       ),
                     ),
-                    title: Text(products[index]['title']),
-                    subtitle: Text('\$${products[index]['price']}'),
+                    title: Text(products[index].title),
+                    subtitle: Text('\$${products[index].price}'),
                     trailing: _buildEditButton(context, index),
                   ),
                   Divider(
