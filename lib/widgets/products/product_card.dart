@@ -3,13 +3,16 @@ import 'package:easylist2/widgets/products/address_tag.dart';
 import 'package:easylist2/widgets/ui_elements/title_default.dart';
 import 'package:flutter/material.dart';
 
+import 'package:scoped_model/scoped_model.dart';
+import 'package:easylist2/scoped-models/products.dart';
+
 import 'price_tag.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
-  final int index;
+  final int productIndex;
 
-  ProductCard({this.product, this.index});
+  ProductCard({this.product, this.productIndex});
 
   Widget _buildTitlePriceRow() {
     return Container(
@@ -20,7 +23,9 @@ class ProductCard extends StatelessWidget {
           TitleDefault(
             title: product.title,
           ),
-          SizedBox(width: 6.0,),
+          SizedBox(
+            width: 6.0,
+          ),
           PriceTag(
             price: product.price.toString(),
           ),
@@ -42,16 +47,26 @@ class ProductCard extends StatelessWidget {
             color: Theme.of(context).primaryColor,
           ),
           onPressed: () {
-            Navigator.pushNamed<bool>(context, '/product/' + index.toString());
+            Navigator.pushNamed<bool>(
+                context, '/product/' + productIndex.toString());
           },
         ),
-        IconButton(
-          icon: Icon(
-            Icons.favorite_border,
-            color: Colors.red,
-          ),
-          onPressed: () {},
-        ),
+        ScopedModelDescendant<ProductModel>(
+          builder: (BuildContext context, Widget child, ProductModel model) {
+            return IconButton(
+              icon: Icon(
+                model.products[productIndex].isFavorite
+                    ? Icons.favorite
+                    : Icons.favorite_border,
+                color: Colors.red,
+              ),
+              onPressed: () {
+                model.selectProduct(productIndex);
+                model.toggleProductFavoriteStatus();
+              },
+            );
+          },
+        )
       ],
     );
   }

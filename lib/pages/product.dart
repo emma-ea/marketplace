@@ -100,6 +100,7 @@ class ProductPage extends StatelessWidget {
                   child: Text(
                     product.description,
                     textAlign: TextAlign.center,
+                    style: TextStyle(fontFamily: 'Oswald', color: Colors.grey)
                   ),
                 ),
               ],
