@@ -3,7 +3,7 @@ import 'package:easylist2/widgets/ui_elements/title_default.dart';
 import 'package:flutter/material.dart';
 
 import 'package:scoped_model/scoped_model.dart';
-import 'package:easylist2/scoped-models/products.dart';
+import 'package:easylist2/scoped-models/main.dart';
 import 'dart:async';
 
 ///
@@ -71,9 +71,9 @@ class ProductPage extends StatelessWidget {
         Navigator.pop(context, false);
         return Future.value(false);
       },
-      child: ScopedModelDescendant<ProductModel>(
-        builder: (BuildContext context, Widget child, ProductModel model) {
-          final Product product = model.products[productIndex];
+      child: ScopedModelDescendant<MainModel>(
+        builder: (BuildContext context, Widget child, MainModel model) {
+          final Product product = model.allProducts[productIndex];
           return Scaffold(
             appBar: AppBar(
               title: Text(product.title),

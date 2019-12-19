@@ -1,5 +1,5 @@
 
-import 'package:easylist2/models/product.dart';
+
 
 import './product_list.dart';
 

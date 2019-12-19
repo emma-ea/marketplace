@@ -1,10 +1,9 @@
 import 'package:easylist2/models/product.dart';
-import 'package:easylist2/scoped-models/products.dart';
+import 'package:easylist2/scoped-models/main.dart';
 import 'package:easylist2/widgets/products/product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import 'price_tag.dart';
 
 ///
 /// hold a list of products.. displayed in products.dart ProductsPage
@@ -32,7 +31,7 @@ class Products extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScopedModelDescendant <ProductModel>(builder: (BuildContext context, Widget child, ProductModel model){
+    return ScopedModelDescendant <MainModel>(builder: (BuildContext context, Widget child, MainModel model){
       return _buildProductList(model.displayProducts);
     },);
   }
