@@ -4,10 +4,26 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 ///
-/// add new products page
+/// all products list page
 ///
 
-class ProductsPage extends StatelessWidget {
+class ProductsPage extends StatefulWidget {
+
+  final MainModel model;
+
+  ProductsPage(this.model);
+
+  @override
+  _ProductsPageState createState() => _ProductsPageState();
+}
+
+class _ProductsPageState extends State<ProductsPage> {
+
+  @override
+  initState() {
+    widget.model.fetchProduct();
+    super.initState();
+  }
   
   Widget _buildSideDrawer(context) {
     return Drawer(
@@ -29,6 +45,18 @@ class ProductsPage extends StatelessWidget {
       );
   }
 
+  Widget _buildProductList() {
+    return ScopedModelDescendant<MainModel>(builder: (BuildContext context, Widget child, MainModel model){
+      Widget content = Center(child: Text('No Products Found!'),);
+      if (model.displayProducts.length > 0 && !model.isLoading) {
+        content = Products();
+      } else if (model.isLoading){
+        content = CircularProgressIndicator();
+      }
+      return content;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +74,7 @@ class ProductsPage extends StatelessWidget {
           },), 
         ],
       ),
-      body: Products(),
+      body: _buildProductList(), 
     );
   }
 }
