@@ -38,7 +38,9 @@ class ProductCard extends StatelessWidget {
   }
 
   Widget _buildActionButtons(context) {
-    return ButtonBar(
+    return ScopedModelDescendant<MainModel>(
+          builder: (BuildContext context, Widget child, MainModel model) {
+            return ButtonBar(
       alignment: MainAxisAlignment.center,
       children: <Widget>[
         IconButton(
@@ -48,12 +50,10 @@ class ProductCard extends StatelessWidget {
           ),
           onPressed: () {
             Navigator.pushNamed<bool>(
-                context, '/product/' + productIndex.toString());
+                context, '/product/' + model.allProducts[productIndex].id);
           },
         ),
-        ScopedModelDescendant<MainModel>(
-          builder: (BuildContext context, Widget child, MainModel model) {
-            return IconButton(
+        IconButton(
               icon: Icon(
                 model.allProducts[productIndex].isFavorite
                     ? Icons.favorite
@@ -61,14 +61,12 @@ class ProductCard extends StatelessWidget {
                 color: Colors.red,
               ),
               onPressed: () {
-                model.selectProduct(productIndex);
+                model.selectProduct(model.allProducts[productIndex].id);
                 model.toggleProductFavoriteStatus();
               },
-            );
-          },
-        )
+        ),
       ],
-    );
+    );});
   }
 
   @override
@@ -76,7 +74,12 @@ class ProductCard extends StatelessWidget {
     return Card(
       child: Column(
         children: <Widget>[
-          Image.network(product.image),
+          FadeInImage(
+            image: NetworkImage(product.image),
+            placeholder: AssetImage('assets/images/food.jpg'),
+            height: 300.0,
+            fit: BoxFit.cover,
+          ),
           _buildTitlePriceRow(),
           AddressTag('Union Square Sans Francisco'),
           Text(product.userEmail),

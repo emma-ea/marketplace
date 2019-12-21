@@ -11,9 +11,9 @@ import 'dart:async';
 ///
 
 class ProductPage extends StatelessWidget {
-  final int productIndex;
+  final Product product;
 
-  ProductPage(this.productIndex);
+  ProductPage(this.product);
 
   /*_showWarningDialog(BuildContext context) {
     showDialog(
@@ -71,42 +71,35 @@ class ProductPage extends StatelessWidget {
         Navigator.pop(context, false);
         return Future.value(false);
       },
-      child: ScopedModelDescendant<MainModel>(
-        builder: (BuildContext context, Widget child, MainModel model) {
-          final Product product = model.allProducts[productIndex];
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(product.title),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(product.title),
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.network(product.image),
+            Container(
+              padding: EdgeInsets.all(10.0),
+              child: TitleDefault(
+                title: product.title,
+              ),
             ),
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Image.network(product.image),
-                Container(
-                  padding: EdgeInsets.all(10.0),
-                  child: TitleDefault(
-                    title: product.title,
-                  ),
-                ),
-                _buildAddressPriceRow(product.price),
-                // RaisedButton(
-                //   color: Theme.of(context).accentColor,
-                //   textColor: Color(0xffffffff),
-                //   child: Text('DELETE'),
-                //   onPressed: () => _showWarningDialog(context), // delete does nothing.
-                // ),
-                Container(
-                  padding: EdgeInsets.all(10),
-                  child: Text(
-                    product.description,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontFamily: 'Oswald', color: Colors.grey)
-                  ),
-                ),
-              ],
+            _buildAddressPriceRow(product.price),
+            // RaisedButton(
+            //   color: Theme.of(context).accentColor,
+            //   textColor: Color(0xffffffff),
+            //   child: Text('DELETE'),
+            //   onPressed: () => _showWarningDialog(context), // delete does nothing.
+            // ),
+            Container(
+              padding: EdgeInsets.all(10),
+              child: Text(product.description,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontFamily: 'Oswald', color: Colors.grey)),
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }

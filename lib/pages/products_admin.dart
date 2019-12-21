@@ -1,6 +1,8 @@
 
 
 
+import 'package:easylist2/scoped-models/main.dart';
+
 import './product_list.dart';
 
 import 'package:flutter/material.dart';
@@ -12,6 +14,10 @@ import 'product_edit.dart';
 ///
 
 class ProductsAdminPage extends StatelessWidget {
+
+  final MainModel model;
+
+  ProductsAdminPage(this.model);
   
   Widget _buildSideDrawer(context) {
     return Drawer(
@@ -57,7 +63,7 @@ class ProductsAdminPage extends StatelessWidget {
         body: TabBarView(
           children: <Widget>[
             ProductEditPage(),
-            ProductListPage(),
+            ProductListPage(model),
           ],
         ),
       ),

@@ -7,6 +7,7 @@ import './pages/product.dart';
 
 import 'package:flutter/material.dart';
 
+import 'models/product.dart';
 import 'scoped-models/main.dart';
 
 void main() => runApp(MyApp());
@@ -34,7 +35,7 @@ class _MyAppState extends State<MyApp> {
         routes: {
           '/': (BuildContext context) => AuthPage(),
           '/products': (BuildContext context) => ProductsPage(model),
-          '/admin': (BuildContext context) => ProductsAdminPage(),
+          '/admin': (BuildContext context) => ProductsAdminPage(model),
         },
         onGenerateRoute: (RouteSettings routeSettings) {
           final List<String> pathElements = routeSettings.name.split('/');
@@ -43,10 +44,13 @@ class _MyAppState extends State<MyApp> {
             return null;
           }
           if (pathElements[1] == 'product') {
-            final int index = int.parse(pathElements[2]);
+            final String productId = pathElements[2];
+            final Product product = model.allProducts.firstWhere((Product product) {
+              return product.id == productId;
+            });
             return MaterialPageRoute<bool>(
               builder: (BuildContext context) =>
-                  ProductPage(index),
+                  ProductPage(product),
             );
           }
           return null;

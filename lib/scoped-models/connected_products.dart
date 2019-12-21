@@ -8,41 +8,10 @@ import 'dart:convert';
 class ConnectedProductsModel extends Model {
   List<Product> _products = [];
   User _authenticatedUser;
-  int _selProductIndex;
+  String _selProductId;
   bool _isLoading = false;
 
-  void addProduct(
-      String title, String description, String image, double price) {
-        _isLoading = true;
-    final Map<String, dynamic> productData = {
-      'title': title,
-      'description': description,
-      'image':
-          'https://cdn.pixabay.com/photo/2018/04/29/11/54/strawberries-3359755_960_720.jpg',
-      'price': price,
-      'userEmail': _authenticatedUser.email,
-      'userId': _authenticatedUser.id
-    };
-    http
-        .post("https://marketplace-1d0a8.firebaseio.com/product.json",
-            body: json.encode(productData))
-        .then((http.Response response) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
-      print(responseData);
-      final Product newProduct = Product(
-          id: responseData['name'],
-          title: title,
-          description: description,
-          image: image,
-          price: price,
-          userEmail: _authenticatedUser.email,
-          userId: _authenticatedUser.id);
-      _products.add(newProduct);
-      _isLoading = false;
-      notifyListeners();
-    });
-  }
-}
+}  
 
 class ProductModel extends ConnectedProductsModel {
   bool _showFavorites = false;
@@ -59,39 +28,124 @@ class ProductModel extends ConnectedProductsModel {
     return List.from(_products);
   }
 
-  int get selectedProductIndex => _selProductIndex;
+  String get selectedProductId => _selProductId;
 
-  Product get selectedProduct =>
-      selectedProductIndex == null ? null : _products[selectedProductIndex];
+  int get selectedProductIndex => _products.indexWhere((Product product) {
+        return product.id == selectedProductId;
+      });
+
+  Product get selectedProduct => selectedProductId == null
+      ? null
+      : _products.firstWhere((Product product) {
+          return product.id == selectedProductId;
+        });
 
   bool get displayFavoritesOnly => _showFavorites;
 
-  void deleteProduct() {
-    _products.removeAt(selectedProductIndex);
+  Future<bool> addProduct(
+      String title, String description, String image, double price) async {
+    _isLoading = true;
     notifyListeners();
+    final Map<String, dynamic> productData = {
+      'title': title,
+      'description': description,
+      'image':
+          'https://cdn.pixabay.com/photo/2018/04/29/11/54/strawberries-3359755_960_720.jpg',
+      'price': price,
+      'userEmail': _authenticatedUser.email,
+      'userId': _authenticatedUser.id
+    };
+    try {
+      final http.Response response = await http.post(
+          "https://marketplace-1d0a8.firebaseio.com/product.json",
+          body: json.encode(productData));
+
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      print(responseData);
+      final Product newProduct = Product(
+          id: responseData['name'],
+          title: title,
+          description: description,
+          image: image,
+          price: price,
+          userEmail: _authenticatedUser.email,
+          userId: _authenticatedUser.id);
+      _products.add(newProduct);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (error) {
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+    // .catchError((error) {
+    //   _isLoading = false;
+    //   notifyListeners();
+    //   return false;
+    // });
   }
 
-  void fetchProduct() {
+
+  Future<bool> deleteProduct() {
     _isLoading = true;
-    http.get('https://marketplace-1d0a8.firebaseio.com/product.json').then((http.Response response){
+    final deletedProduct = selectedProduct.id;
+    _products.removeAt(selectedProductIndex);
+    _selProductId = null;
+    notifyListeners();
+    return http
+        .delete(
+            'https://marketplace-1d0a8.firebaseio.com/product/${deletedProduct}.json')
+        .then((http.Response response) {
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    }).catchError((error) {
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    });
+  }
+
+  Future<Null> fetchProduct() {
+    _isLoading = true;
+    notifyListeners();
+    return http
+        .get('https://marketplace-1d0a8.firebaseio.com/product.json')
+        .then<Null>((http.Response response) {
       print(json.decode(response.body));
       final Map<String, dynamic> productListData = json.decode(response.body);
       final List<Product> fetchProductListData = [];
+      if (productListData != null) {
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
       productListData.forEach((String productId, dynamic productData) {
-          final Product fetchedProduct = Product(
+        final Product fetchedProduct = Product(
             id: productId,
             title: productData['title'],
             description: productData['description'],
             image: productData['image'],
             price: productData['price'],
             userEmail: productData['userEmail'],
-            userId: productData['userId']
-          );
-          fetchProductListData.add(fetchedProduct);
+            userId: productData['userId']);
+        fetchProductListData.add(fetchedProduct);
       });
       _products = fetchProductListData;
       _isLoading = false;
       notifyListeners();
+      _selProductId = null;
+      return;
+    }).catchError((error) {
+      _isLoading = false;
+      notifyListeners();
+      return;
     });
   }
 
@@ -112,22 +166,45 @@ class ProductModel extends ConnectedProductsModel {
     //_selectedProductIndex == null;
   }
 
-  void updateProduct(
+  Future<bool> updateProduct(
       String title, String description, String image, double price) {
-    final Product updatedProduct = Product(
-        id: selectedProduct.id,
-        title: title,
-        description: description,
-        image: image,
-        price: price,
-        userEmail: selectedProduct.userEmail,
-        userId: selectedProduct.userId);
-    _products[selectedProductIndex] = updatedProduct;
+    _isLoading = true;
     notifyListeners();
+    final Map<String, dynamic> updateData = {
+      'title': title,
+      'description': description,
+      'image':
+          'https://cdn.pixabay.com/photo/2018/04/29/11/54/strawberries-3359755_960_720.jpg',
+      'price': price,
+      'userEmail': selectedProduct.userEmail,
+      'userId': selectedProduct.userId
+    };
+    return http
+        .put(
+            'https://marketplace-1d0a8.firebaseio.com/product/${selectedProduct.id}.json',
+            body: json.encode(updateData))
+        .then((http.Response response) {
+      _isLoading = false;
+      final Product updatedProduct = Product(
+          id: selectedProduct.id,
+          title: title,
+          description: description,
+          image: image,
+          price: price,
+          userEmail: selectedProduct.userEmail,
+          userId: selectedProduct.userId);
+      _products[selectedProductIndex] = updatedProduct;
+      notifyListeners();
+      return true;
+    }).catchError((error) {
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    });
   }
 
-  void selectProduct(int index) {
-    _selProductIndex = index;
+  void selectProduct(String productId) {
+    _selProductId = productId;
     notifyListeners();
   }
 
