@@ -10,8 +10,7 @@ class ConnectedProductsModel extends Model {
   User _authenticatedUser;
   String _selProductId;
   bool _isLoading = false;
-
-}  
+}
 
 class ProductModel extends ConnectedProductsModel {
   bool _showFavorites = false;
@@ -90,7 +89,6 @@ class ProductModel extends ConnectedProductsModel {
     //   return false;
     // });
   }
-
 
   Future<bool> deleteProduct() {
     _isLoading = true;
@@ -217,6 +215,21 @@ class ProductModel extends ConnectedProductsModel {
 class UserModel extends ConnectedProductsModel {
   void login(String email, String password) {
     _authenticatedUser = User(id: '1234', email: email, password: password);
+  }
+
+  Future<Map<String, dynamic>> signupNewUser(String email, String password) async {
+    final Map<String, dynamic> userAuthData = {
+      'email': email,
+      'password': password,
+      'returnSecureToken': true
+    };
+    final http.Response response =  await http.post(
+        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=[AIzaSyDxmx3tiZrYdRvOgjf6OXngoP913n3enPw]',
+        body: json.encode(userAuthData));
+    if (response.statusCode != 200 || response.statusCode != 201) {
+
+    }
+    
   }
 }
 
