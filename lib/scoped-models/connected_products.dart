@@ -119,7 +119,7 @@ class ProductModel extends ConnectedProductsModel {
       print(json.decode(response.body));
       final Map<String, dynamic> productListData = json.decode(response.body);
       final List<Product> fetchProductListData = [];
-      if (productListData != null) {
+      if (productListData == null) {
         _isLoading = false;
         notifyListeners();
         return;
@@ -213,23 +213,67 @@ class ProductModel extends ConnectedProductsModel {
 }
 
 class UserModel extends ConnectedProductsModel {
-  void login(String email, String password) {
-    _authenticatedUser = User(id: '1234', email: email, password: password);
-  }
-
-  Future<Map<String, dynamic>> signupNewUser(String email, String password) async {
+  Future<Map<String, dynamic>> login(String email, String password) async {
+    _isLoading = true;
+    notifyListeners();
     final Map<String, dynamic> userAuthData = {
       'email': email,
       'password': password,
       'returnSecureToken': true
     };
-    final http.Response response =  await http.post(
-        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=[AIzaSyDxmx3tiZrYdRvOgjf6OXngoP913n3enPw]',
-        body: json.encode(userAuthData));
-    if (response.statusCode != 200 || response.statusCode != 201) {
+    final http.Response response = await http.post(
+        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDxmx3tiZrYdRvOgjf6OXngoP913n3enPw',
+        body: json.encode(userAuthData),
+        headers: {'Content-Type': 'application/json'});
 
+        print(json.decode(response.body));
+    final Map<String, dynamic> responseData = json.decode(response.body);
+    bool hasError = true;
+    String message = 'Something Went Wrong';
+    if (responseData.containsKey('idToken')) {
+      hasError = false;
+      message = 'Authentication Success';
+    } else if (responseData['error']['message'] == 'EMAIL_NOT_FOUND') {
+      message = "Email was not found";
+    } else if (responseData['error']['message'] == 'INVALID_PASSWORD') {
+      message = 'Password is invalid';
     }
-    
+
+    _isLoading = false;
+    notifyListeners();
+    return {'success': !hasError, 'message': message};
+  }
+
+  Future<Map<String, dynamic>> signupNewUser(
+      String email, String password) async {
+    _isLoading = true;
+    notifyListeners();
+    final Map<String, dynamic> userAuthData = {
+      'email': email,
+      'password': password,
+      'returnSecureToken': true
+    };
+    final http.Response response = await http.post(
+        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDxmx3tiZrYdRvOgjf6OXngoP913n3enPw',
+        body: json.encode(userAuthData),
+        headers: {'Content-Type': 'application/json'});
+
+    print(json.decode(response.body));
+    final Map<String, dynamic> responseData = json.decode(response.body);
+    bool hasError = true;
+    String message = 'Something Went Wrong';
+    if (responseData.containsKey('idToken')) {
+      hasError = false;
+      message = 'Authentication Success';
+    } else if (responseData['error']['message'] == 'EMAIL_EXISTS') {
+      message = "Email Already Exists";
+    } else if (responseData['error']['message'] == 'INVALID_EMAIL') {
+      message = 'Email is not Valid';
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return {'success': !hasError, 'message': message};
   }
 }
 

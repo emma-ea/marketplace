@@ -21,8 +21,8 @@ class _ProductsPageState extends State<ProductsPage> {
 
   @override
   initState() {
-    widget.model.fetchProduct();
     super.initState();
+    widget.model.fetchProduct();
   }
   
   Widget _buildSideDrawer(context) {
@@ -53,7 +53,7 @@ class _ProductsPageState extends State<ProductsPage> {
       } else if (model.isLoading){
         content = Center(child: CircularProgressIndicator());
       }
-      return RefreshIndicator(onRefresh: model.fetchProduct, child: content);
+      return RefreshIndicator(onRefresh: model.fetchProduct, child: content, backgroundColor: Colors.blue,);
     });
   }
 
